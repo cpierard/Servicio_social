@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 #Aspect ratio 2
 Lx, Ly = (2., 1.)
-nx, ny = (192, 96)
+nx, ny = (256, 128)
 
 # Create bases and domain
 x_basis = de.Fourier('x', nx, interval=(0, Lx), dealias=3/2)
@@ -68,9 +68,9 @@ amp = -0.2
 
 #Velocidades horizontales
 
-u['g'] = flow*np.tanh(y/a)      #Perfil Ui_tanh
+#u['g'] = flow*np.tanh(y/a)      #Perfil Ui_tanh
 #u['g'] = flow*np.abs(y) + 0.5    #Perfil Ui_punta
-#u['g'] = flow * a/y   #Perfil Ui_hiperbola
+u['g'] = flow * a/y   #Perfil Ui_hiperbola
 #u['g'] = flow * a/np.abs(y)  #Perfil Ui_abs_hiperb
 
 '''
@@ -102,7 +102,7 @@ s.differentiate('y',out=sy)
 
 #Tiempo de simulación y CFL
 
-solver.stop_sim_time = 2.01 #Tiempo de simulación
+solver.stop_sim_time = 6.01 #Tiempo de simulación
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
@@ -112,7 +112,7 @@ cfl.add_velocities(('u','v'))
 
 #Análisis: aqui defines nombre y las variable quieres guardar en el archivo.hdf5
 
-nombre_hdf5 = 'prueba_mpi'
+nombre_hdf5 = 'mpi_n_4'
 
 analysis = solver.evaluator.add_file_handler( nombre_hdf5 , sim_dt=0.1, max_writes=100) # "nombre_archivo_hdf5"
 analysis.add_task('s') #variables a guardar

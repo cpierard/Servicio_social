@@ -6,7 +6,7 @@ from matplotlib import animation
 
 #Función para extraer datos del archivo hdf5
 
-dx, dy = 2/192., 1/96.
+dx, dy = 2/256., 1/128.
 
 x, y = np.mgrid[slice(0, 2, dx), slice(0, 1, dy)]
 
@@ -51,8 +51,8 @@ def animar_dedalus(xm, ym, S, CMAP):
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-s_dat , s_rofile_dat, u_dat = extraer_datos('nombre/nombre_s1/nombre_s1_p0.h5')
+s_dat , s_rofile_dat, u_dat = extraer_datos('mpi_n_4/mpi_n_4_s1.h5')
 
-anima_s = animar_dedalus(x, y, s_dat, 'Spectral')
+anima_s = animar_dedalus(x, y, s_dat, 'RdBu')
 mywriter = animation.FFMpegWriter()
-anima_s.save('KH_prueba_mpi.mp4',writer=mywriter, fps=30) #nombre de como quieres que se guarde el video.
+anima_s.save('mpi_n_4.mp4',writer=mywriter, fps=30) #nombre de como quieres que se guarde el video.
