@@ -1,93 +1,105 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import h5py
+from mpi4py import MPI
 from dedalus import public as de
 from dedalus.extras import flow_tools
 import time
-from mpi4py import MPI
 
 import logging
 logger = logging.getLogger(__name__)
 
-#Domain
+# ## Dominio del problema
 
 Lx, Ly = (0.2, 0.35)
 nx, ny = (256, 256)
-Prandtl = 1.
-Rayleigh = 5.8e7
-T0 = 4.0
-ρ0 = 999.9720 #(999.9720 + 999.8395)/2
-α = 8.1e-6
 
-x_basis = de.Fourier('x', nx, interval=(0, Lx), dealias = 3/2)
-y_basis = de.Chebyshev('y', ny, interval=(0, Ly), dealias = 3/2)
+ν = 1.8e-6
+k = 2e-5
+T0 = 4.0
+T_b = 0.0
+g = 9.8
+κ = 1.3e-7
+ρ0 = 999.9720 # densidad a 4ºC
+α = 8.1e-6
+T_air = 21.
+T_top = 25.
+z_int = 0.18
+
+Prandtl = ν/κ
+print(Prandtl)
+Rayleigh = (g*α*T0**2*(0.22)**3)/(ν*κ)
+print(Rayleigh)
+
+x_basis = de.Fourier('x', nx, interval=(0, Lx))
+y_basis = de.Chebyshev('y', ny, interval=(0, Ly))
 domain = de.Domain([x_basis, y_basis], grid_dtype=np.float64)
 
 
-# Equations
+# ## Ecuaciones
+
 problem = de.IVP(domain, variables=['p', 'u', 'v', 'ρ', 'T', 'uy', 'vy', 'Ty'])
+
 problem.meta['p', 'T', 'u', 'v', 'ρ']['y']['dirichlet'] = True
 
-problem.parameters['P'] = (Rayleigh * Prandtl)**(-1/2)
-problem.parameters['R'] = (Rayleigh / Prandtl)**(-1/2)
+problem.parameters['ν'] = ν
+problem.parameters['κ'] = κ
+problem.parameters['T_air'] = T_air
+problem.parameters['k'] = k
 problem.parameters['ρ0'] = ρ0
 problem.parameters['T_0'] = T0 #4.0 ºC
-problem.parameters['K'] = 1.3e-7
 problem.parameters['g'] = 9.8
 problem.parameters['α'] = α
+problem.parameters['T_b'] = T_b
+problem.parameters['T_top'] = T_top
 
 problem.add_equation("dx(u) + vy = 0")
-problem.add_equation("dt(u) - R*(dx(dx(u)) + dy(uy)) + dx(p) = -(u*dx(u) + v*uy)")
-problem.add_equation("dt(v) - R*(dx(dx(v)) + dy(vy)) + dy(p) = -(u*dx(v) + v*vy) - g*(ρ - ρ0)/ρ0")
+problem.add_equation("dt(u) - ν*(dx(dx(u)) + dy(uy)) + dx(p) = -(u*dx(u) + v*uy)")
+problem.add_equation("dt(v) - ν*(dx(dx(v)) + dy(vy)) + dy(p) = -(u*dx(v) + v*vy) - g*(ρ - ρ0)/ρ0")
 problem.add_equation("ρ = ρ0 - ρ0*α*(T - T_0)**2")
-problem.add_equation("dt(T) - K*(dx(dx(T)) + dy(Ty)) = - u*dx(T) - v*Ty")
+problem.add_equation("dt(T) - κ*(dx(dx(T)) + dy(Ty)) = - u*dx(T) - v*Ty - k*(T - T_air)")
 problem.add_equation("Ty - dy(T) = 0")
 problem.add_equation("uy - dy(u) = 0")
 problem.add_equation("vy - dy(v) = 0")
 
-#Boundary conditions
-
-problem.add_bc("left(T) = 0.0")
-problem.add_bc("right(T) = T_0")
+problem.add_bc("left(T) = T_b")
+problem.add_bc("right(T) = T_top")
 problem.add_bc("left(u) = 0")
 problem.add_bc("left(v) = 0")
 problem.add_bc("right(u) = 0")
 problem.add_bc("right(v) = 0", condition="(nx != 0)")
-problem.add_bc("right(p) = 0", condition="(nx == 0)")
-
-#Solver
+problem.add_bc("left(p) = 0", condition="(nx == 0)")
 
 solver = problem.build_solver(de.timesteppers.RK222)
 
 
-#Initial conditions
-
+# ## Condiciones iniciales
 x = domain.grid(0)
 y = domain.grid(1)
 T = solver.state['T']
 Ty = solver.state['Ty']
 ρ = solver.state['ρ']
 
-
-#Lineal profile
-
 yb, yt = y_basis.interval
 
-x = domain.grid(0)
-y = domain.grid(1)
+x = domain.grid(0,scales=domain.dealias)
+y = domain.grid(1,scales=domain.dealias)
 xm, ym = np.meshgrid(x,y)
 
-T['g'] = 4/yt * y
-ρ['g'] = ρ0 - ρ0*α*(T['g'] - T0)**2
+a, b = T['g'].shape
+
+T['g'] = 40.257128492422666*y - 300.5817711700071*y**2 + 1113.2658191481735*y**3
+T['g'] = T['g'] + np.random.rand(a,b)*1e-1
+
+ρ['g'] = ρ0 - ρ0*α*(T['g'] - 2*T0)**2
 
 # Initial timestep
-dt = 0.125
-solver.stop_sim_time = 20
-solver.stop_wall_time = 30 * 70.
+dt = 0.1
+# Integration parameters
+solver.stop_sim_time = 40
+solver.stop_wall_time = 30 * 90.
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('analisis_2d_conv', sim_dt=0.25, max_writes=100)
+snapshots = solver.evaluator.add_file_handler('strat_conv_analisys', sim_dt=0.25, max_writes=300)
 snapshots.add_system(solver.state)
 
 # CFL
@@ -95,10 +107,8 @@ CFL = flow_tools.CFL(solver, initial_dt=dt, cadence=10, safety=1,
                      max_change=1.5, min_change=0.5, max_dt=0.125, threshold=0.05)
 CFL.add_velocities(('u', 'v'))
 
-flow = flow_tools.GlobalFlowProperty(solver, cadence=10)
-flow.add_property("sqrt(u*u + v*v) / R", name='Re')
+#Solver
 
-#Main loop
 try:
     logger.info('Starting loop')
     start_time = time.time()
@@ -108,7 +118,7 @@ try:
         if (solver.iteration-1) % 10 == 0:
             # Update plot of scalar field
             logger.info('Iteration: %i, Time: %e, dt: %e' %(solver.iteration, solver.sim_time, dt))
-            logger.info('Max Re = %f' %flow.max('Re'))
+
 except:
     logger.error('Exception raised, triggering end of main loop.')
     raise
@@ -118,28 +128,3 @@ finally:
     logger.info('Sim end time: %f' %solver.sim_time)
     logger.info('Run time: %.2f sec' %(end_time-start_time))
     logger.info('Run time: %f cpu-hr' %((end_time-start_time)/60/60*domain.dist.comm_cart.size))
-
-'''
-#Data analysis
-
-with h5py.File('analisis_2d_conv/analisis_2d_conv_s1/analisis_2d_conv_s1_p0.h5', flag ='r') as hdf:
-    base_items = list(hdf.items())
-    print(base_items, '\n')
-    tasks = hdf.get('tasks')
-    tasks_items = list(tasks.items())
-    print(tasks_items)
-
-    T_dat = np.array(tasks.get('T'))
-    print(T_dat.shape)
-
-    ρ_dat = np.array(tasks.get('ρ'))
-    print(ρ_dat.shape)
-
-fig, axis = plt.subplots(figsize=(4,7))
-p = axis.pcolormesh(xm, ym, ρ_dat[-1].T, cmap='RdBu_r');
-plt.colorbar(p)
-plt.title('Density')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.show()
-'''
