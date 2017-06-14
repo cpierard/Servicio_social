@@ -15,13 +15,13 @@ nx, ny = (256, 256)
 ν = 1.8e-6
 k = 2e-5
 T0 = 4.0
-T_b = 0.0
+T_b = 8.0# 0.0
 g = 9.8
 κ = 1.3e-7
 ρ0 = 999.9720 # densidad a 4ºC
 α = 8.1e-6
 T_air = 21.
-T_top = 25.
+T_top = 4.0 #8.
 z_int = 0.18
 
 Prandtl = ν/κ
@@ -66,7 +66,7 @@ problem.add_bc("left(u) = 0")
 problem.add_bc("left(v) = 0")
 problem.add_bc("right(u) = 0")
 problem.add_bc("right(v) = 0", condition="(nx != 0)")
-problem.add_bc("left(p) = 0", condition="(nx == 0)")
+problem.add_bc("right(p) = 0", condition="(nx == 0)")
 
 solver = problem.build_solver(de.timesteppers.RK222)
 
@@ -86,20 +86,20 @@ xm, ym = np.meshgrid(x,y)
 
 a, b = T['g'].shape
 
-T['g'] = 40.257128492422666*y - 300.5817711700071*y**2 + 1113.2658191481735*y**3
-T['g'] = T['g'] + np.random.rand(a,b)*1e-1
+T['g'] = 8.0 -11.4286* y    #40.257128492422666*y - 300.5817711700071*y**2 + 1113.2658191481735*y**3
+T['g'] = T['g'] + np.random.rand(a,b)
 
-ρ['g'] = ρ0 - ρ0*α*(T['g'] - 2*T0)**2
+ρ['g'] = ρ0 - ρ0*α*(T['g'] - T0)**2
 
 # Initial timestep
 dt = 0.1
 # Integration parameters
-solver.stop_sim_time = 40
+solver.stop_sim_time = 60
 solver.stop_wall_time = 30 * 90.
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('strat_conv_analisys', sim_dt=0.25, max_writes=300)
+snapshots = solver.evaluator.add_file_handler('strat_conv_analisys', sim_dt=0.25, max_writes=400)
 snapshots.add_system(solver.state)
 
 # CFL
