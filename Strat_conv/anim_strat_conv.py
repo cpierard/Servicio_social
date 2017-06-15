@@ -6,9 +6,9 @@ from matplotlib import animation
 
 #Función para extraer datos del archivo hdf5
 
-dx, dy = 0.2/256., 0.35/256.
+dx, dy = 0.2/256., 0.2/256.
 
-x, y = np.mgrid[slice(0, 0.2, dx), slice(0, 0.35, dy)]
+x, y = np.mgrid[slice(0, 0.2, dx), slice(0, 0.2, dy)]
 
 def extraer_datos(nombre_h5):
 
@@ -30,7 +30,7 @@ def extraer_datos(nombre_h5):
     #Función animar
 
 def animar_dedalus(xm, ym, S, CMAP):
-    fig, axis = plt.subplots(figsize=(4,7))
+    fig, axis = plt.subplots(figsize=(6,6))
     p = axis.pcolormesh(xm, ym, S[0,:,:], cmap=CMAP)
     plt.colorbar(p)
 
@@ -50,11 +50,13 @@ def animar_dedalus(xm, ym, S, CMAP):
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-T_dat , ρ_dat = extraer_datos('strat_conv_analisys/strat_conv_analisys_s3.h5')
+T_dat , ρ_dat = extraer_datos('strat_conv_analisys/strat_conv_analisys_s1.h5')
 
 anima_T = animar_dedalus(x, y, T_dat, 'rainbow')
 #mywriter = animation.FFMpegWriter()
 #anima_T.save('strat_conv_T.mp4',writer=mywriter, fps=38) #nombre de como quieres que se guarde el video.
+
+
 
 '''
 anima_ρ = animar_dedalus(x, y, ρ_dat, 'rainbow')

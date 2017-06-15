@@ -9,13 +9,13 @@ logger = logging.getLogger(__name__)
 
 # ## Dominio del problema
 
-Lx, Ly = (0.2, 0.35)
+Lx, Ly = (0.2, 0.2)
 nx, ny = (256, 256)
 
 ν = 1.8e-6
 k = 2e-5
 T0 = 4.0
-T_b = 8.0# 0.0
+T_b = 0.0# 0.0
 g = 9.8
 κ = 1.3e-7
 ρ0 = 999.9720 # densidad a 4ºC
@@ -86,10 +86,9 @@ xm, ym = np.meshgrid(x,y)
 
 a, b = T['g'].shape
 
-T['g'] = 8.0 - 11.4286* y   #40.257128492422666*y - 300.5817711700071*y**2 + 1113.2658191481735*y**3
-T['g'] = T['g'] + np.random.rand(a,b)
-
-ρ['g'] = ρ0 - ρ0*α*(T['g'] - T0)**2
+T['g'] = 20*y + np.random.rand(a, b)*(yt - y) * (y - yb)*40
+#T['g'] = T['g'] + np.random.rand(a,b)
+#ρ['g'] = ρ0 - ρ0*α*(T['g'] - T0)**2
 
 # Initial timestep
 dt = 0.1
