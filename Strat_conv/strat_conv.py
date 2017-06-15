@@ -86,7 +86,7 @@ xm, ym = np.meshgrid(x,y)
 
 a, b = T['g'].shape
 
-T['g'] = 8.0 -11.4286* y    #40.257128492422666*y - 300.5817711700071*y**2 + 1113.2658191481735*y**3
+T['g'] = 8.0 - 11.4286* y   #40.257128492422666*y - 300.5817711700071*y**2 + 1113.2658191481735*y**3
 T['g'] = T['g'] + np.random.rand(a,b)
 
 ρ['g'] = ρ0 - ρ0*α*(T['g'] - T0)**2
@@ -94,17 +94,17 @@ T['g'] = T['g'] + np.random.rand(a,b)
 # Initial timestep
 dt = 0.1
 # Integration parameters
-solver.stop_sim_time = 60
+solver.stop_sim_time = 85
 solver.stop_wall_time = 30 * 90.
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('strat_conv_analisys', sim_dt=0.25, max_writes=400)
+snapshots = solver.evaluator.add_file_handler('strat_conv_analisys', sim_dt=0.25, max_writes=100)
 snapshots.add_system(solver.state)
 
 # CFL
 CFL = flow_tools.CFL(solver, initial_dt=dt, cadence=10, safety=1,
-                     max_change=1.5, min_change=0.5, max_dt=0.125, threshold=0.05)
+                     max_change=1.5, min_change=0.5, max_dt=0.1, threshold=0.05)
 CFL.add_velocities(('u', 'v'))
 
 #Solver

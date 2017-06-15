@@ -41,7 +41,7 @@ def animar_dedalus(xm, ym, S, CMAP):
 
     def update(frame):
         p.set_array(np.ravel(S[frame, :-1, :-1]))
-        #plt.title(frame)
+        plt.title(frame)
         return p
 
     anim = animation.FuncAnimation(fig, update, frames= [i for i in range(1,len(S))], init_func=init,  blit = False)
@@ -50,9 +50,9 @@ def animar_dedalus(xm, ym, S, CMAP):
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-T_dat , ρ_dat = extraer_datos('strat_conv_analisys/strat_conv_analisys_s1.h5')
+T_dat , ρ_dat = extraer_datos('strat_conv_analisys/strat_conv_analisys_s3.h5')
 
-#anima_T = animar_dedalus(x, y, T_dat, 'rainbow')
+anima_T = animar_dedalus(x, y, T_dat, 'rainbow')
 #mywriter = animation.FFMpegWriter()
 #anima_T.save('strat_conv_T.mp4',writer=mywriter, fps=38) #nombre de como quieres que se guarde el video.
 
@@ -60,7 +60,7 @@ T_dat , ρ_dat = extraer_datos('strat_conv_analisys/strat_conv_analisys_s1.h5')
 anima_ρ = animar_dedalus(x, y, ρ_dat, 'rainbow')
 #mywriter = animation.FFMpegWriter()
 anima_ρ.save('RB_conv_rho.mp4',writer=mywriter, fps=30) #nombre de como quieres que se guarde el video.
-'''
+
 
 print(T_dat.shape)
 
@@ -71,3 +71,4 @@ plt.title('Temperature, frame 240')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.show()
+'''
