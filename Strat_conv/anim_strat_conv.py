@@ -12,7 +12,7 @@ x, y = np.mgrid[slice(0, 0.2, dx), slice(0, 0.35, dy)]
 
 def extraer_datos(nombre_h5):
 
-    with h5py.File(nombre_h5, flag ='r') as hdf:
+    with h5py.File(nombre_h5, 'r') as hdf:
         base_items = list(hdf.items())
         print(base_items, '\n')
         tasks = hdf.get('tasks')
@@ -50,7 +50,7 @@ def animar_dedalus(xm, ym, S, CMAP):
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-T_dat , ρ_dat = extraer_datos('strat_conv_analisys/strat_conv_analisys_s3.h5')
+T_dat , ρ_dat = extraer_datos('strat_conv_analisys/strat_conv_analisys_s4.h5')
 
 anima_T = animar_dedalus(x, y, T_dat, 'rainbow')
 #mywriter = animation.FFMpegWriter()
