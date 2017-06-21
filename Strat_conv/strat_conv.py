@@ -103,8 +103,8 @@ snapshots = solver.evaluator.add_file_handler('strat_conv_analisys', sim_dt=0.25
 snapshots.add_system(solver.state)
 
 # CFL
-CFL = flow_tools.CFL(solver, initial_dt=dt, cadence=10, safety=1,
-                     max_change=1.5, min_change=0.5, max_dt=0.01, threshold=0.01)
+CFL = flow_tools.CFL(solver, initial_dt = dt, max_change = 0.5)
+#CFL = flow_tools.CFL(solver, initial_dt=dt, cadence=10, safety=1, max_change=1.5, min_change=0.5, max_dt=0.01, threshold=0.01)
 CFL.add_velocities(('u', 'v'))
 
 #Solver
