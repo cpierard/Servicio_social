@@ -92,9 +92,9 @@ T['g'] = T['g'] + np.random.rand(a,b)
 ρ['g'] = ρ0 - ρ0*α*(T['g'] - T0)**2
 
 # Initial timestep
-dt = 0.01
+dt = 0.02
 # Integration parameters
-solver.stop_sim_time = 100
+solver.stop_sim_time = 80
 solver.stop_wall_time = 30 * 90.
 solver.stop_iteration = np.inf
 
@@ -103,8 +103,8 @@ snapshots = solver.evaluator.add_file_handler('strat_conv_analisys', sim_dt=0.25
 snapshots.add_system(solver.state)
 
 # CFL
-CFL = flow_tools.CFL(solver, initial_dt = dt, max_change = 0.5)
-#CFL = flow_tools.CFL(solver, initial_dt=dt, cadence=10, safety=1, max_change=1.5, min_change=0.5, max_dt=0.01, threshold=0.01)
+#CFL = flow_tools.CFL(solver, initial_dt = dt, max_change = 0.5)
+CFL = flow_tools.CFL(solver, initial_dt=dt, cadence=10, safety=1, max_change=1.5, min_change=0.5, max_dt=0.1, threshold=0.01)
 CFL.add_velocities(('u', 'v'))
 
 #Solver
