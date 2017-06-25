@@ -50,7 +50,7 @@ def animar_dedalus(xm, ym, S, CMAP):
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-T_dat , ρ_dat = extraer_datos('strat_conv_analisys/strat_conv_analisys_s4.h5')
+T_dat , ρ_dat = extraer_datos('strat_conv_analisys/strat_conv_analisys_s2.h5')
 
 anima_T = animar_dedalus(x, y, T_dat, 'rainbow')
 #mywriter = animation.FFMpegWriter()

@@ -94,7 +94,7 @@ T['g'] = T['g'] + np.random.rand(a,b)
 # Initial timestep
 dt = 0.02
 # Integration parameters
-solver.stop_sim_time = 80
+solver.stop_sim_time = 60
 solver.stop_wall_time = 30 * 90.
 solver.stop_iteration = np.inf
 
@@ -104,7 +104,7 @@ snapshots.add_system(solver.state)
 
 # CFL
 #CFL = flow_tools.CFL(solver, initial_dt = dt, max_change = 0.5)
-CFL = flow_tools.CFL(solver, initial_dt=dt, cadence=10, safety=1, max_change=1.5, min_change=0.5, max_dt=0.1, threshold=0.01)
+CFL = flow_tools.CFL(solver, initial_dt=dt, cadence=5, safety=0.1, max_change=1.5, min_change=0.5, max_dt=0.02, threshold=0.01)
 CFL.add_velocities(('u', 'v'))
 
 #Solver
