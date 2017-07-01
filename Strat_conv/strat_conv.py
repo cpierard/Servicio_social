@@ -94,7 +94,7 @@ T['g'] = T['g'] + np.random.rand(a,b)
 # Initial timestep
 dt = 0.02
 # Integration parameters
-solver.stop_sim_time = 100
+solver.stop_sim_time = 150
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 

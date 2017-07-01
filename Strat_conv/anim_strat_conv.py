@@ -57,7 +57,7 @@ def animar_dedalus(xm, ym, S, t, CMAP):
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-T_dat , ρ_dat, t_dat = extraer_datos('strat_conv_analisys/strat_conv_analisys_s1.h5')
+T_dat , ρ_dat, t_dat = extraer_datos('strat_conv_analysis/strat_conv_analysis_s2.h5')
 print('sim t')
 print(t_dat.shape)
 
