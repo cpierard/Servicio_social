@@ -85,16 +85,17 @@ y = domain.grid(1,scales=domain.dealias)
 xm, ym = np.meshgrid(x,y)
 
 a, b = T['g'].shape
+pert =  np.random.rand(nx,ny) * (yt - y) * (y - 0.18) * y * (y - 0.26) * 1000
 
-T['g'] = 8.0 - 11.4286* y   #40.257128492422666*y - 300.5817711700071*y**2 + 1113.2658191481735*y**3
-T['g'] = T['g'] + np.random.rand(a,b)
+T['g'] = 40.257128492422666*y - 300.5817711700071*y**2 + 1113.2658191481735*y**3
+T['g'] = T['g'] + pert
 
 ρ['g'] = ρ0 - ρ0*α*(T['g'] - T0)**2
 
 # Initial timestep
 dt = 0.02
 # Integration parameters
-solver.stop_sim_time = 100
+solver.stop_sim_time = 80
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
