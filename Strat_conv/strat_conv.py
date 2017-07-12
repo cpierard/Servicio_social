@@ -85,7 +85,7 @@ y = domain.grid(1,scales=domain.dealias)
 xm, ym = np.meshgrid(x,y)
 
 a, b = T['g'].shape
-pert =  np.random.rand(nx,ny) * (yt - y) * (y - 0.18) * y * (y - 0.26) * 1000
+pert =  np.random.rand(a,b) * (yt - y) * (y - 0.18) * y * (y - 0.26) * 1000
 
 T['g'] = 40.257128492422666*y - 300.5817711700071*y**2 + 1113.2658191481735*y**3
 T['g'] = T['g'] + pert
