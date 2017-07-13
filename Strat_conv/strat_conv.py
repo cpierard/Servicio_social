@@ -15,13 +15,13 @@ nx, ny = (256, 256)
 ν = 1.8e-6
 k = 2e-5
 T0 = 4.0
-T_b = 0.0# 0.0
+T_b = 0.0 # bottom temperature
 g = 9.8
 κ = 1.3e-7
 ρ0 = 999.9720 # densidad a 4ºC
 α = 8.1e-6
 T_air = 21.
-T_top = 4.0 #8.
+T_top = 25.0 #8.
 z_int = 0.18
 
 Prandtl = ν/κ
@@ -95,7 +95,7 @@ T['g'] = T['g'] + pert
 # Initial timestep
 dt = 0.02
 # Integration parameters
-solver.stop_sim_time = 80
+solver.stop_sim_time = 100
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
