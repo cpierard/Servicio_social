@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from IPython import display
 from matplotlib import animation
+import matplotlib.colors as colors
 
 #Función para extraer datos del archivo hdf5
 
@@ -37,7 +38,7 @@ def extraer_datos(nombre_h5):
 
 def animar_dedalus(xm, ym, S, t, CMAP):
     fig, axis = plt.subplots(figsize=(4,7))
-    p = axis.pcolormesh(xm, ym, S[0,:,:], cmap=CMAP)
+    p = axis.pcolormesh(xm, ym, S[0,:,:],  norm= colors.PowerNorm(gamma=1./2.), cmap=CMAP)
     plt.colorbar(p)
 
     def init():
@@ -57,7 +58,7 @@ def animar_dedalus(xm, ym, S, t, CMAP):
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-T_dat , ρ_dat, t_dat = extraer_datos('strat_conv_analisys/strat_conv_analisys_s1.h5')
+T_dat , ρ_dat, t_dat = extraer_datos('strat_conv_analysis/strat_conv_analysis_s1.h5')
 print('sim t')
 print(t_dat.shape)
 
@@ -77,9 +78,11 @@ anima_ρ.save('RB_conv_rho.mp4',writer=mywriter, fps=30) #nombre de como quieres
 
 
 print(T_dat.shape)
-
+#
 fig, axis = plt.subplots(figsize=(4,7))
-pT = axis.pcolormesh(x, y, T_dat[-1,:,:], cmap='rainbow');
+pT = axis.pcolormesh(x, y, T_dat[-1,:,:], norm= colors.PowerNorm(gamma=1./2.), cmap='rainbow');
+#pT = axis.pcolormesh(x, y, T_dat[-1,:,:], vmin=0, vmax=4.3, cmap='rainbow');
+
 plt.colorbar(pT)
 plt.title('Temperature, frame 240')
 plt.xlabel('x')
