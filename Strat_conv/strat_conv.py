@@ -95,12 +95,12 @@ T['g'] = T['g'] + pert
 # Initial timestep
 dt = 0.02
 # Integration parameters
-solver.stop_sim_time = 100
+solver.stop_sim_time = 180
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('strat_conv_analysis', sim_dt=0.25, max_writes=400)
+snapshots = solver.evaluator.add_file_handler('strat_conv_analysis', sim_dt=0.25, max_writes=100)
 snapshots.add_system(solver.state)
 
 # CFL
