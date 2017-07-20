@@ -36,9 +36,9 @@ def extraer_datos(nombre_h5):
 
     #Función animar
 
-def animar_dedalus(xm, ym, S, t, CMAP):
+def animar_dedalus(xm, ym, S, t, norma,  CMAP):
     fig, axis = plt.subplots(figsize=(4,7))
-    p = axis.pcolormesh(xm, ym, S[0,:,:],  norm= colors.PowerNorm(gamma=1./2.), cmap=CMAP)
+    p = axis.pcolormesh(xm, ym, S[0,:,:],  norm= colors.PowerNorm(gamma=norma), cmap=CMAP)
     plt.colorbar(p)
 
     def init():
@@ -58,7 +58,7 @@ def animar_dedalus(xm, ym, S, t, CMAP):
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-T_dat , ρ_dat, t_dat = extraer_datos('strat_conv_analysis/strat_conv_analysis_s1.h5')
+T_dat , ρ_dat, t_dat = extraer_datos('strat_conv_analysis/strat_conv_analysis.h5')
 print('sim t')
 print(t_dat.shape)
 
@@ -67,9 +67,9 @@ print(t_dat.shape)
 #print(max_v)
 
 #print(dy)
-anima_T = animar_dedalus(x, y, T_dat, t_dat, 'rainbow')
-#mywriter = animation.FFMpegWriter()
-#anima_T.save('strat_conv_T.mp4',writer=mywriter, fps=38) #nombre de como quieres que se guarde el video.
+anima_T = animar_dedalus(x, y, T_dat, t_dat, 1./2., 'rainbow_r')
+mywriter = animation.FFMpegWriter()
+anima_T.save('strat_conv_T.mp4',writer=mywriter, fps=50) #nombre de como quieres que se guarde el video.
 
 '''
 anima_ρ = animar_dedalus(x, y, ρ_dat, 'rainbow')
