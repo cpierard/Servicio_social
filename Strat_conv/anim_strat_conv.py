@@ -49,7 +49,11 @@ def animar_dedalus(xm, ym, S, t, norma,  CMAP):
 
     def update(frame):
         p.set_array(np.ravel(S[frame, :-1, :-1]))
-        plt.title(str(t[frame]))
+        #plt.title(str(t[frame]))
+        plt.xlabel('$x$')
+        plt.ylabel('$y$')
+        plt.title('Temperatura')
+
         return p
 
     anim = animation.FuncAnimation(fig, update, frames= [i for i in range(0,len(S))], init_func=init,  blit = False)
@@ -68,21 +72,20 @@ print(t_dat.shape)
 
 #print(dy)
 anima_T = animar_dedalus(x, y, T_dat, t_dat, 1./2., 'rainbow_r')
-mywriter = animation.FFMpegWriter()
-anima_T.save('strat_conv_T.mp4',writer=mywriter, fps=50) #nombre de como quieres que se guarde el video.
+#mywriter = animation.FFMpegWriter()
+anima_T.save('strat_conv_T_180.gif',writer='imagemagick', fps=50) #nombre de como quieres que se guarde el video.
 
 '''
-anima_ρ = animar_dedalus(x, y, ρ_dat, 'rainbow')
+anima_ρ = animar_dedalus(x, y, ρ_dat, 'rainbow_r')
 #mywriter = animation.FFMpegWriter()
 anima_ρ.save('RB_conv_rho.mp4',writer=mywriter, fps=30) #nombre de como quieres que se guarde el video.
 
 
 print(T_dat.shape)
-#
+
 fig, axis = plt.subplots(figsize=(4,7))
 pT = axis.pcolormesh(x, y, T_dat[-1,:,:], norm= colors.PowerNorm(gamma=1./2.), cmap='rainbow');
-#pT = axis.pcolormesh(x, y, T_dat[-1,:,:], vmin=0, vmax=4.3, cmap='rainbow');
-
+plt.annotate('hola', xy = (0.15, 0.3), xytext = (0.15, 0.32))
 plt.colorbar(pT)
 plt.title('Temperature, frame 240')
 plt.xlabel('x')
