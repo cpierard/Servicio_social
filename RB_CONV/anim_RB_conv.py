@@ -53,10 +53,10 @@ def animar_dedalus(xm, ym, S, CMAP):
 T_dat , ρ_dat = extraer_datos('RB_conv_analysis/RB_conv_analysis_s1.h5')
 
 anima_T = animar_dedalus(x, y, T_dat, 'RdBu')
-mywriter = animation.FFMpegWriter()
-anima_T.save('RB_conv_T.mp4',writer=mywriter, fps=30) #nombre de como quieres que se guarde el video.
-
-
-anima_ρ = animar_dedalus(x, y, ρ_dat, 'RdBu')
 #mywriter = animation.FFMpegWriter()
-anima_ρ.save('RB_conv_rho.mp4',writer=mywriter, fps=30) #nombre de como quieres que se guarde el video.
+#anima_T.save('RB_conv_T.mp4',writer=mywriter, fps=30) #nombre de como quieres que se guarde el video.
+
+
+#anima_ρ = animar_dedalus(x, y, ρ_dat, 'RdBu')
+#mywriter = animation.FFMpegWriter()
+#anima_ρ.save('RB_conv_rho.mp4',writer=mywriter, fps=30) #nombre de como quieres que se guarde el video.

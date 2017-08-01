@@ -81,8 +81,8 @@ T['g'] = np.random.rand(a,b)*1e-1 + 4.5
 # Initial timestep
 dt = 0.125
 # Integration parameters
-solver.stop_sim_time = 30
-solver.stop_wall_time = 30 * 70.
+solver.stop_sim_time = 60
+solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
 # Analysis
