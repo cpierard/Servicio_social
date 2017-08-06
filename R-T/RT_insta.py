@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 logger = logging.getLogger(__name__)
 
-Lx, Ly = (0.5, 0.5)
+Lx, Ly = (0.2, 0.2)
 nx, ny = (256, 256)
 
 x_basis = de.Fourier('x', nx, interval=(0, Lx), dealias=3/2)
@@ -63,18 +63,18 @@ for i in range(int(ny/2), ny):
 #ρ['g'][64, 64] = ρ_lower #Perturbación
 
 # Initial timestep
-dt = 0.02
+dt = 0.0002
 # Integration parameters
-solver.stop_sim_time = 2.
+solver.stop_sim_time = .02
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('RT_1', sim_dt=0.01, max_writes=50)
+snapshots = solver.evaluator.add_file_handler('RT_1', sim_dt=0.008, max_writes=50)
 snapshots.add_system(solver.state)
 
 # CFL
-CFL = flow_tools.CFL(solver, dt, safety=0.1,  max_dt=0.02, threshold = 0.01)
+CFL = flow_tools.CFL(solver, dt, safety=0.1,  max_dt=0.0002, threshold = 0.0001)
 CFL.add_velocities(('u', 'v'))
 
 logger.info('Starting loop')
