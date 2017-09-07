@@ -62,7 +62,7 @@ def animar_dedalus(xm, ym, S, t, norma,  CMAP):
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-T_dat , ρ_dat, t_dat = extraer_datos('strat_conv_analysis_180/strat_conv_analysis.h5')
+T_dat , ρ_dat, t_dat = extraer_datos('strat_andrea/strat_andrea_s1/strat_andrea_s1_p0.h5')
 print('sim t')
 print(t_dat.shape)
 
@@ -71,9 +71,9 @@ print(t_dat.shape)
 #print(max_v)
 
 #print(dy)
-anima_T = animar_dedalus(x, y, T_dat, t_dat, 1./2., 'rainbow_r')
-mywriter = animation.FFMpegWriter()
-anima_T.save('strat_conv_T_180.mp4',writer='imagemagick', fps=40) #nombre de como quieres que se guarde el video. 'imagemagick'
+anima_T = animar_dedalus(x, y, ρ_dat, t_dat, 1./2., 'rainbow_r')
+#mywriter = animation.FFMpegWriter()
+#anima_T.save('strat_conv_T_180.mp4',writer='imagemagick', fps=40) #nombre de como quieres que se guarde el video. 'imagemagick'
 
 '''
 anima_ρ = animar_dedalus(x, y, ρ_dat, 'rainbow_r')
