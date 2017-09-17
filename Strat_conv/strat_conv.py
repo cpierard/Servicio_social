@@ -14,15 +14,21 @@ nx, ny = (256, 256)
 
 ν = 1.8e-6
 k = 2e-5
-T0 = 4.0
-T_b = 8.0# 0.0
+T0 = 20.0
+T_b = 24.0 # bottom temperature
 g = 9.8
 κ = 1.3e-7
-ρ0 = 999.9720 # densidad a 4ºC
-α = 8.1e-6
-T_air = 21.
-T_top = 4.0 #8.
+ρ0 = 1007.0 #
+α = 0.15 #8.1e-6
+β = 0.78
+s_top = 0.
+s_bot = 12.5
+s0 = 9.4727
+T_air = 20.
+T_top = 20.0 #8.
 z_int = 0.18
+Reynolds = 100
+Schmidt = 1
 
 Prandtl = ν/κ
 print(Prandtl)
@@ -36,10 +42,13 @@ domain = de.Domain([x_basis, y_basis], grid_dtype=np.float64)
 
 # ## Ecuaciones
 
-problem = de.IVP(domain, variables=['p', 'u', 'v', 'ρ', 'T', 'uy', 'vy', 'Ty'])
+problem = de.IVP(domain, variables=['p', 'u', 'v', 'ρ', 's', 'T', 'uy', 'vy', 'Ty', 'sy'])
 
-problem.meta['p', 'T', 'u', 'v', 'ρ']['y']['dirichlet'] = True
+problem.meta['p', 'T', 'u', 'v', 'ρ', 's']['y']['dirichlet'] = True
 
+#problem.parameters['P'] = (Rayleigh * Prandtl)**(-1/2)
+#problem.parameters['R'] = (Rayleigh / Prandtl)**(-1/2)
+#problem.parameters['F'] = F = 1
 problem.parameters['ν'] = ν
 problem.parameters['κ'] = κ
 problem.parameters['T_air'] = T_air
@@ -48,24 +57,41 @@ problem.parameters['ρ0'] = ρ0
 problem.parameters['T_0'] = T0 #4.0 ºC
 problem.parameters['g'] = 9.8
 problem.parameters['α'] = α
+problem.parameters['β'] = β
 problem.parameters['T_b'] = T_b
 problem.parameters['T_top'] = T_top
+problem.parameters['s0'] = s0
+problem.parameters['s_top'] = s_top
+problem.parameters['s_bot'] = s_bot
 
-problem.add_equation("dx(u) + vy = 0")
-problem.add_equation("dt(u) - ν*(dx(dx(u)) + dy(uy)) + dx(p) = -(u*dx(u) + v*uy)")
-problem.add_equation("dt(v) - ν*(dx(dx(v)) + dy(vy)) + dy(p) = -(u*dx(v) + v*vy) - g*(ρ - ρ0)/ρ0")
-problem.add_equation("ρ = ρ0 - ρ0*α*(T - T_0)**2")
-problem.add_equation("dt(T) - κ*(dx(dx(T)) + dy(Ty)) = - u*dx(T) - v*Ty - k*(T - T_air)")
+problem.parameters['Re'] = Reynolds
+problem.parameters['Sc'] = Schmidt
+
+problem.add_equation("dx(u) + vy = 0") #continuidad
+problem.add_equation("dt(u) - ν*(dx(dx(u)) + dy(uy)) + dx(p) = -(u*dx(u) + v*uy)") #N-S x
+problem.add_equation("dt(v) - ν*(dx(dx(v)) + dy(vy)) + dy(p) = -(u*dx(v) + v*vy) + g*(ρ - ρ0)/ρ0") #N-S y
+problem.add_equation("dt(T) - κ*(dx(dx(T)) + dy(Ty)) = - u*dx(T) - v*Ty - k*(T - T_air)") #conservación energía
+problem.add_equation("ρ = ρ0 - α*(T - T_0) + β*(s - s0)") #ecuación de estado
+problem.add_equation("dt(s) - 1/(Re)*(dx(dx(s)) + dy(sy)) = - u*dx(s) - v*sy") #ecuación para salinidad
+#Nota: quité el número de Schmidt
+
 problem.add_equation("Ty - dy(T) = 0")
 problem.add_equation("uy - dy(u) = 0")
 problem.add_equation("vy - dy(v) = 0")
+problem.add_equation("sy - dy(s) = 0")
 
 problem.add_bc("left(T) = T_b")
 problem.add_bc("right(T) = T_top")
+
 problem.add_bc("left(u) = 0")
-problem.add_bc("left(v) = 0")
 problem.add_bc("right(u) = 0")
+
+problem.add_bc("left(v) = 0")
 problem.add_bc("right(v) = 0", condition="(nx != 0)")
+
+problem.add_bc("left(s) = s_bot")
+problem.add_bc("right(s) = s_top")
+
 problem.add_bc("right(p) = 0", condition="(nx == 0)")
 
 solver = problem.build_solver(de.timesteppers.RK222)
@@ -77,6 +103,10 @@ y = domain.grid(1)
 T = solver.state['T']
 Ty = solver.state['Ty']
 ρ = solver.state['ρ']
+s = solver.state['s']
+
+def perfil_arriba(x):
+    return -12.5/(0.35 - 0.18)*x - -12.5/(0.35 - 0.18)*0.35
 
 yb, yt = y_basis.interval
 
@@ -85,21 +115,32 @@ y = domain.grid(1,scales=domain.dealias)
 xm, ym = np.meshgrid(x,y)
 
 a, b = T['g'].shape
+pert =  np.random.rand(a,b) * (yt - y) * (y - 0.18) * y * (y - 0.26) * 1000
 
-T['g'] = 8.0 - 11.4286* y   #40.257128492422666*y - 300.5817711700071*y**2 + 1113.2658191481735*y**3
-T['g'] = T['g'] + np.random.rand(a,b)
+T['g'] = np.zeros_like(y) + 20. + pert
 
-ρ['g'] = ρ0 - ρ0*α*(T['g'] - T0)**2
+for i in range(0, len(y[0])):
+    if y[0, i] <= 0.18:
+        s['g'][:, i] = s_bot
+    elif y[0,i] > 0.18:
+        s['g'][:, i] = perfil_arriba(y[0,i])
+
+
+ρ['g'] = ρ0 - α*(T['g'] - T0) + β*(s['g'] - s0)
 
 # Initial timestep
 dt = 0.02
 # Integration parameters
+<<<<<<< HEAD
 solver.stop_sim_time = 150
+=======
+solver.stop_sim_time = 10
+>>>>>>> 08284ba11a6cf1b4c618884577cc597ab4f2ba05
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('strat_conv_analysis', sim_dt=0.25, max_writes=400)
+snapshots = solver.evaluator.add_file_handler('temp_salinity', sim_dt=0.25, max_writes=100)
 snapshots.add_system(solver.state)
 
 # CFL
