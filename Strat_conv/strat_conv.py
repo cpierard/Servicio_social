@@ -63,6 +63,7 @@ problem.parameters['T_top'] = T_top
 problem.parameters['s0'] = s0
 problem.parameters['s_top'] = s_top
 problem.parameters['s_bot'] = s_bot
+problem.parameters['Lx'] = Lx
 
 problem.parameters['Re'] = Reynolds
 problem.parameters['Sc'] = Schmidt
@@ -115,7 +116,7 @@ y = domain.grid(1,scales=domain.dealias)
 xm, ym = np.meshgrid(x,y)
 
 a, b = T['g'].shape
-pert =  np.random.rand(a,b) * (yt - y) * (y - 0.18) * y * (y - 0.26) * 1000
+pert =  np.random.rand(a,b) * (yt - y) * (y - 0.18) * y * (y - 0.26) *(0.23 - y)*(0.29 - y)* 1000
 
 T['g'] = np.zeros_like(y) + 20. + pert
 
@@ -138,6 +139,8 @@ solver.stop_iteration = np.inf
 # Analysis
 snapshots = solver.evaluator.add_file_handler('temp_salinity', sim_dt=0.25, max_writes=100)
 snapshots.add_system(solver.state)
+snapshots.add_task("integ(s,'x')/Lx", name='s profile')
+snapshots.add_task("integ(T,'x')/Lx", name='T profile')
 
 # CFL
 #CFL = flow_tools.CFL(solver, initial_dt = dt, max_change = 0.5)

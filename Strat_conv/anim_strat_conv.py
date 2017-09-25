@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from IPython import display
 from matplotlib import animation
 import matplotlib.colors as colors
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 #Función para extraer datos del archivo hdf5
 
@@ -37,26 +38,37 @@ def extraer_datos(nombre_h5):
     #Función animar
 
 def animar_dedalus(xm, ym, S, t, norma,  CMAP):
-    fig, axis = plt.subplots(figsize=(4,7))
-    p = axis.pcolormesh(xm, ym, S[0,:,:],  norm= colors.PowerNorm(gamma=norma), cmap=CMAP)
-    plt.colorbar(p)
+    #fig, axis = plt.subplots(figsize=(4,7))
+    #p = axis.pcolormesh(xm, ym, S[0,:,:],  norm= colors.PowerNorm(gamma=norma), cmap=CMAP)
+    #plt.colorbar(p)
+    fig = plt.figure(figsize=(4,7))
+    ax = fig.add_subplot(111)
+    div = make_axes_locatable(ax)
+    cax = div.append_axes('right', '5%', '5%')
+    im = ax.pcolormesh(xm, ym, S[0,:,:], cmap='rainbow')
+    cb = fig.colorbar(im, cax=cax)
+    tx = ax.set_title('Frame 0')
+    #def init():
+    #    print('update init')
+    #    im.set_array(np.ravel(S[0,:-1,:-1]))
 
-    def init():
-                print('update init')
-                p.set_array(np.ravel(S[0,:-1,:-1]))
-
-                return p
+    #    return im
 
     def update(frame):
-        p.set_array(np.ravel(S[frame, :-1, :-1]))
+        vmax = np.max(S[frame])
+        vmin = np.min(S[frame])
+        im.set_array(np.ravel(S[frame, :-1, :-1]))
+        #im.set_clim(vmin, vmax)
+        tx.set_text('Frame {0}'.format(i))
+
         #plt.title(str(t[frame]))
-        plt.xlabel('$x$')
-        plt.ylabel('$y$')
-        plt.title('Temperatura')
+        #plt.xlabel('$x$')
+        #plt.ylabel('$y$')
+        #plt.title('Temperatura')
 
-        return p
+        #return im
 
-    anim = animation.FuncAnimation(fig, update, frames= [i for i in range(0,len(S), 3)], init_func=init,  blit = False)
+    anim = animation.FuncAnimation(fig, update, frames= [i for i in range(0,len(S), 3)],  blit = False)
     plt.show()
     return anim
 
