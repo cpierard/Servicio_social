@@ -49,24 +49,20 @@ def animar_dedalus(xm, ym, S, t, norma,  CMAP):
 
     def update(frame):
         p.set_array(np.ravel(S[frame, :-1, :-1]))
-        #plt.title(str(t[frame]))
+        plt.title(str(t[frame]))
         plt.xlabel('$x$')
         plt.ylabel('$y$')
-        plt.title('Temperatura')
+        #plt.title('Temperatura')
 
         return p
 
-    anim = animation.FuncAnimation(fig, update, frames= [i for i in range(0,len(S), 3)], init_func=init,  blit = False)
+    anim = animation.FuncAnimation(fig, update, frames= [i for i in range(0,len(S), 1)], init_func=init,  blit = False)
     plt.show()
     return anim
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-<<<<<<< HEAD
-T_dat , ρ_dat, t_dat = extraer_datos('strat_conv_analysis/strat_conv_analysis_s2.h5')
-=======
-T_dat , ρ_dat, t_dat = extraer_datos('temp_salinity/temp_salinity_s1.h5')
->>>>>>> 08284ba11a6cf1b4c618884577cc597ab4f2ba05
+T_dat , ρ_dat, t_dat = extraer_datos('temp_salinity/temp_salinity_s6.h5')
 print('sim t')
 print(t_dat.shape)
 
