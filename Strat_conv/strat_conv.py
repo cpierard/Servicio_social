@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 # ## Dominio del problema
 
-Lx, Ly = (0.2, 0.35)
+Lx, Ly = (0.1, 0.15)
 nx, ny = (256, 256)
 
 ν = 1.8e-6
@@ -24,9 +24,10 @@ g = 9.8
 s_top = 0.
 s_bot = 12.5
 s0 = 9.4727
+z_int = 0.08
+
 T_air = 20.
 T_top = 20.0 #8.
-z_int = 0.18
 Reynolds = 100
 Schmidt = 1
 
@@ -63,6 +64,7 @@ problem.parameters['T_top'] = T_top
 problem.parameters['s0'] = s0
 problem.parameters['s_top'] = s_top
 problem.parameters['s_bot'] = s_bot
+problem.parameters['Lx'] = Lx
 
 problem.parameters['Re'] = Reynolds
 problem.parameters['Sc'] = Schmidt
@@ -106,7 +108,7 @@ Ty = solver.state['Ty']
 s = solver.state['s']
 
 def perfil_arriba(x):
-    return -12.5/(0.35 - 0.18)*x - -12.5/(0.35 - 0.18)*0.35
+    return -s_bot/(Ly - z_int)*x -(-s_bot/(Ly - z_int))*Ly
 
 yb, yt = y_basis.interval
 
@@ -115,14 +117,14 @@ y = domain.grid(1,scales=domain.dealias)
 xm, ym = np.meshgrid(x,y)
 
 a, b = T['g'].shape
-pert =  np.random.rand(a,b) * (yt - y) * (y - 0.18) * y * (y - 0.26) * 1000
+pert =  np.random.rand(a,b) * (yt - y) * (y - z_int) * (-y) * ((Ly - Ly/2) - y)*(0.11 - y)*(0.13 - y) * 1e7
 
 T['g'] = np.zeros_like(y) + 20. + pert
 
 for i in range(0, len(y[0])):
-    if y[0, i] <= 0.18:
+    if y[0, i] <= z_int:
         s['g'][:, i] = s_bot
-    elif y[0,i] > 0.18:
+    elif y[0,i] > z_int:
         s['g'][:, i] = perfil_arriba(y[0,i])
 
 
@@ -138,6 +140,8 @@ solver.stop_iteration = np.inf
 # Analysis
 snapshots = solver.evaluator.add_file_handler('temp_salinity', sim_dt=0.25, max_writes=100)
 snapshots.add_system(solver.state)
+snapshots.add_task("integ(s,'x')/Lx", name='s profile')
+snapshots.add_task("integ(T,'x')/Lx", name='T profile')
 
 # CFL
 #CFL = flow_tools.CFL(solver, initial_dt = dt, max_change = 0.5)
