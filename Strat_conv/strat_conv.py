@@ -12,29 +12,27 @@ logger = logging.getLogger(__name__)
 Lx, Ly = (0.1, 0.15)
 nx, ny = (256, 256)
 
-ν = 1.8e-6
-k = 2e-5
-T0 = 20.0
-T_b = 30.0 # bottom temperature
-g = 9.8
-κ = 1.3e-7
-ρ0 = 1007.0 #
-α = 0.15 #8.1e-6
-β = 0.78
-s_top = 0.
-s_bot = 12.5
-s0 = 9.4727
-z_int = 0.08
+ν = 1.8e-6 # m^2/s viscocidad cinemática
+k = 2e-5 # s^-1
+g = 9.8 #  m/s^2
+κ = 1.3e-7 #thermal difussivity m^2/s
 
-T_air = 20.
-T_top = 20.0 #8.
+ρ0 = 1004.65 # kg/m^3 promedio de las densidades iniciales
+α = 0.15 # kg/m^3ºC thermal expansion
+β = 0.78 # kg/m^3%0 salinity contraction
+s_top = 0. #salinidad top (partes por mil)
+s_bot = 8.5 #salinidad bottom (partes por mil)
+s0 = 5.898256
+
+z_int = 0.08 #Altura de convección (m)
+
+T0 = 20.0 # ºC Promedio de las temperaturas iniciales
+T_b = 24.0 #Bottom temperature ºC
+T_air = 20. # ºC temperatura de aire.
+T_top = 20.0
+L_conv = 0.35
 Reynolds = 100
 Schmidt = 1
-
-Prandtl = ν/κ
-print(Prandtl)
-Rayleigh = (g*α*T0**2*(0.22)**3)/(ν*κ)
-print(Rayleigh)
 
 x_basis = de.Fourier('x', nx, interval=(0, Lx))
 y_basis = de.Chebyshev('y', ny, interval=(0, Ly))
@@ -117,7 +115,7 @@ y = domain.grid(1,scales=domain.dealias)
 xm, ym = np.meshgrid(x,y)
 
 a, b = T['g'].shape
-pert =  np.random.rand(a,b) * (yt - y) * (y - z_int) * (-y) * ((Ly - Ly/2) - y)*(0.11 - y)*(0.13 - y) * 1e7
+pert =  np.random.rand(a,b) * (yt - y) * (y - z_int) * (-y) * ((Ly - Ly/2) - y)*(0.11 - y)*(0.13 - y) * 5e7
 
 T['g'] = np.zeros_like(y) + 20. + pert
 
@@ -138,7 +136,7 @@ solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('temp_salinity_30ix_30grad', sim_dt=0.20, max_writes=100)
+snapshots = solver.evaluator.add_file_handler('temp_salinity_1x0', sim_dt=0.10, max_writes=200)
 snapshots.add_system(solver.state)
 snapshots.add_task("integ(s,'x')/Lx", name='s profile')
 snapshots.add_task("integ(T,'x')/Lx", name='T profile')
