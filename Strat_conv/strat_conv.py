@@ -15,7 +15,7 @@ nx, ny = (256, 256)
 ν = 1.8e-6
 k = 2e-5
 T0 = 20.0
-T_b = 24.0 # bottom temperature
+T_b = 30.0 # bottom temperature
 g = 9.8
 κ = 1.3e-7
 ρ0 = 1007.0 #
@@ -133,12 +133,12 @@ for i in range(0, len(y[0])):
 # Initial timestep
 dt = 0.02
 # Integration parameters
-solver.stop_sim_time = 10
+solver.stop_sim_time = 300
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('temp_salinity', sim_dt=0.25, max_writes=100)
+snapshots = solver.evaluator.add_file_handler('temp_salinity_30ix_30grad', sim_dt=0.20, max_writes=100)
 snapshots.add_system(solver.state)
 snapshots.add_task("integ(s,'x')/Lx", name='s profile')
 snapshots.add_task("integ(T,'x')/Lx", name='T profile')

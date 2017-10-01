@@ -8,9 +8,9 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 #Función para extraer datos del archivo hdf5
 
-dx, dy = 0.2/256., 0.35/256.
+dx, dy = 0.1/256., 0.15/256.
 
-x, y = np.mgrid[slice(0, 0.2, dx), slice(0, 0.35, dy)]
+x, y = np.mgrid[slice(0, 0.1, dx), slice(0, 0.15, dy)]
 
 def extraer_datos(nombre_h5):
 
@@ -30,51 +30,48 @@ def extraer_datos(nombre_h5):
         ρ = np.array(tasks.get('ρ'))
         print(ρ.shape)
 
+        s = np.array(tasks.get('s'))
+        print(s.shape)
+
         t = np.array(scales.get('sim_time'))
         print('sim t: ' +str(t.shape))
 
-    return T, ρ, t
+    return T, ρ, s, t
 
     #Función animar
 
 def animar_dedalus(xm, ym, S, t, norma,  CMAP):
-    #fig, axis = plt.subplots(figsize=(4,7))
-    #p = axis.pcolormesh(xm, ym, S[0,:,:],  norm= colors.PowerNorm(gamma=norma), cmap=CMAP)
-    #plt.colorbar(p)
-    fig = plt.figure(figsize=(4,7))
-    ax = fig.add_subplot(111)
-    div = make_axes_locatable(ax)
-    cax = div.append_axes('right', '5%', '5%')
-    im = ax.pcolormesh(xm, ym, S[0,:,:], cmap='rainbow')
-    cb = fig.colorbar(im, cax=cax)
-    tx = ax.set_title('Frame 0')
-    #def init():
-    #    print('update init')
-    #    im.set_array(np.ravel(S[0,:-1,:-1]))
+    fig, axis = plt.subplots(figsize=(4,7))
+    p = axis.pcolormesh(xm, ym, S[0,:,:],  norm= colors.PowerNorm(gamma=norma), cmap=CMAP)
+    plt.colorbar(p)
+    tx = axis.set_title(str(t[0]))
 
-    #    return im
+    def init():
+        print('update init')
+        p.set_array(np.ravel(S[0,:-1,:-1]))
+        tx.set_text('t = ' + str(t[0]))
+        return p
 
     def update(frame):
-        vmax = np.max(S[frame])
         vmin = np.min(S[frame])
-        im.set_array(np.ravel(S[frame, :-1, :-1]))
-        #im.set_clim(vmin, vmax)
-        tx.set_text('Frame {0}'.format(i))
-
+        vmax = np.max(S[frame])
+        p.set_array(np.ravel(S[frame, :-1, :-1]))
+        p.set_clim(vmin, vmax)
         #plt.title(str(t[frame]))
-        #plt.xlabel('$x$')
-        #plt.ylabel('$y$')
+        plt.xlabel('$x$')
+        plt.ylabel('$y$')
+        tx.set_text('t = ' + str(t[frame]))
         #plt.title('Temperatura')
 
-        #return im
+        return p
 
-    anim = animation.FuncAnimation(fig, update, frames= [i for i in range(0,len(S), 3)],  blit = False)
+    anim = animation.FuncAnimation(fig, update, frames= [i for i in range(0,len(S))],  blit = False)
     plt.show()
     return anim
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-T_dat , ρ_dat, t_dat = extraer_datos('temp_salinity/temp_salinity_s1.h5')
+T_dat , ρ_dat, s_dat, t_dat = extraer_datos('temp_salinity_30ix/temp_salinity_30ix_s2.h5')
 print('sim t')
 print(t_dat.shape)
 
@@ -83,10 +80,10 @@ print(t_dat.shape)
 #print(max_v)
 
 #print(dy)
-anima_T = animar_dedalus(x, y, T_dat, t_dat, 1./2., 'rainbow_r')
-#mywriter = animation.FFMpegWriter()
-#anima_T.save('strat_conv_T_180.mp4',writer='imagemagick', fps=40) #nombre de como quieres que se guarde el video. 'imagemagick'
-
+anima_T = animar_dedalus(x, y, T_dat, t_dat, 1/2., 'rainbow_r')
+mywriter = animation.FFMpegWriter()
+#anima_T.save('prueba.gif',writer='imagemagick', fps=10) #nombre de como quieres que se guarde el video. 'imagemagick'
+#anima_T.save('prueba2.mp4',writer=mywriter, fps=30)
 '''
 anima_ρ = animar_dedalus(x, y, ρ_dat, 'rainbow_r')
 #mywriter = animation.FFMpegWriter()
