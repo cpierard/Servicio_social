@@ -27,7 +27,7 @@ s0 = 5.898256
 z_int = 0.08 #Altura de convección (m)
 
 T0 = 20.0 # ºC Promedio de las temperaturas iniciales
-T_b = 24.0 #Bottom temperature ºC
+T_b = 28.0 #Bottom temperature ºC
 T_air = 20. # ºC temperatura de aire.
 T_top = 20.0
 L_conv = 0.35
@@ -115,7 +115,7 @@ y = domain.grid(1,scales=domain.dealias)
 xm, ym = np.meshgrid(x,y)
 
 a, b = T['g'].shape
-pert =  np.random.rand(a,b) * (yt - y) * (y - z_int) * (-y) * ((Ly - Ly/2) - y)*(0.11 - y)*(0.13 - y) * 5e7
+pert =  np.random.rand(a,b) * (yt - y) * (y - z_int) * (-y) * ((Ly - Ly/2) - y)*(0.11 - y)*(0.13 - y) * 6e7
 
 T['g'] = np.zeros_like(y) + 20. + pert
 
@@ -131,12 +131,12 @@ for i in range(0, len(y[0])):
 # Initial timestep
 dt = 0.02
 # Integration parameters
-solver.stop_sim_time = 300
+solver.stop_sim_time = 150
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('temp_salinity_1x0', sim_dt=0.10, max_writes=200)
+snapshots = solver.evaluator.add_file_handler('temp_salinity_1x1', sim_dt=0.25, max_writes=200)
 snapshots.add_system(solver.state)
 snapshots.add_task("integ(s,'x')/Lx", name='s profile')
 snapshots.add_task("integ(T,'x')/Lx", name='T profile')
