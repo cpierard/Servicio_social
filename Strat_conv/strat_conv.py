@@ -17,22 +17,22 @@ k = 2e-5 # s^-1
 g = 9.8 #  m/s^2
 κ = 1.3e-7 #thermal difussivity m^2/s
 
-ρ0 = 1004.65 # kg/m^3 promedio de las densidades iniciales
+ρ0 = 1006.75  # kg/m^3 promedio de las densidades iniciales
 α = 0.15 # kg/m^3ºC thermal expansion
 β = 0.78 # kg/m^3%0 salinity contraction
 s_top = 0. #salinidad top (partes por mil)
-s_bot = 8.5 #salinidad bottom (partes por mil)
-s0 = 5.898256
+s_bot = 12.5 #salinidad bottom (partes por mil)
+s0 = 12.5
 
 z_int = 0.08 #Altura de convección (m)
 
 T0 = 20.0 # ºC Promedio de las temperaturas iniciales
-T_b = 28.0 #Bottom temperature ºC
+T_b = 24.0 #Bottom temperature ºC
 T_air = 20. # ºC temperatura de aire.
 T_top = 20.0
 L_conv = 0.35
 Reynolds = 100
-Schmidt = 1
+Schmidt = 1000
 
 x_basis = de.Fourier('x', nx, interval=(0, Lx))
 y_basis = de.Chebyshev('y', ny, interval=(0, Ly))
@@ -69,10 +69,10 @@ problem.parameters['Sc'] = Schmidt
 
 problem.add_equation("dx(u) + vy = 0") #continuidad
 problem.add_equation("dt(u) - ν*(dx(dx(u)) + dy(uy)) + dx(p) = -(u*dx(u) + v*uy)") #N-S x
-problem.add_equation("dt(v) - ν*(dx(dx(v)) + dy(vy)) + dy(p) = -(u*dx(v) + v*vy) + g*(ρ - ρ0)/ρ0") #N-S y
+problem.add_equation("dt(v) - ν*(dx(dx(v)) + dy(vy)) + dy(p) = -(u*dx(v) + v*vy) - g*(ρ - ρ0)/ρ0") #N-S y
 problem.add_equation("dt(T) - κ*(dx(dx(T)) + dy(Ty)) = - u*dx(T) - v*Ty - k*(T - T_air)") #conservación energía
 problem.add_equation("ρ = ρ0 - α*(T - T_0) + β*(s - s0)") #ecuación de estado
-problem.add_equation("dt(s) - 1/(Re)*(dx(dx(s)) + dy(sy)) = - u*dx(s) - v*sy") #ecuación para salinidad
+problem.add_equation("dt(s) - 1/(Re*Sc)*(dx(dx(s)) + dy(sy)) = - u*dx(s) - v*sy") #ecuación para salinidad
 #Nota: quité el número de Schmidt
 
 problem.add_equation("Ty - dy(T) = 0")
@@ -115,7 +115,7 @@ y = domain.grid(1,scales=domain.dealias)
 xm, ym = np.meshgrid(x,y)
 
 a, b = T['g'].shape
-pert =  np.random.rand(a,b) * (yt - y) * (y - z_int) * (-y) * ((Ly - Ly/2) - y)*(0.11 - y)*(0.13 - y) * 6e7
+pert =  np.random.rand(a,b) * (yt - y) * (y - z_int) * (-y) * ((Ly - Ly/2) - y)*(0.11 - y)*(0.13 - y) * 1e7
 
 T['g'] = np.zeros_like(y) + 20. + pert
 
@@ -136,10 +136,11 @@ solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('temp_salinity_1x1', sim_dt=0.25, max_writes=200)
+snapshots = solver.evaluator.add_file_handler('temp_salinity_8x12pm', sim_dt=0.25, max_writes=200)
 snapshots.add_system(solver.state)
 snapshots.add_task("integ(s,'x')/Lx", name='s profile')
 snapshots.add_task("integ(T,'x')/Lx", name='T profile')
+snapshots.add_task("integ(ρ,'x')/Lx", name='ρ profile')
 
 # CFL
 #CFL = flow_tools.CFL(solver, initial_dt = dt, max_change = 0.5)

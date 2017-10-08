@@ -41,7 +41,7 @@ def extraer_datos(nombre_h5):
     #Función animar
 
 def animar_dedalus(xm, ym, S, t, norma,  CMAP):
-    fig, axis = plt.subplots(figsize=(4,7))
+    fig, axis = plt.subplots(figsize=(5,7.5))
     p = axis.pcolormesh(xm, ym, S[0,:,:],  norm= colors.PowerNorm(gamma=norma), cmap=CMAP)
     plt.colorbar(p)
     tx = axis.set_title(str(t[0]))
@@ -71,7 +71,7 @@ def animar_dedalus(xm, ym, S, t, norma,  CMAP):
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-T_dat , ρ_dat, s_dat, t_dat = extraer_datos('temp_salinity_1x1/temp_salinity_1x1_s1.h5')
+T_dat , ρ_dat, s_dat, t_dat = extraer_datos('temp_salinity_8x12pm/temp_salinity_8x12pm_s3.h5')
 print('sim t')
 print(t_dat.shape)
 
@@ -80,9 +80,9 @@ print(t_dat.shape)
 #print(max_v)
 
 #print(dy)
-anima_T = animar_dedalus(x, y, T_dat, t_dat, 1/2., 'rainbow')
-mywriter = animation.FFMpegWriter()
-#anima_T.save('prueba.gif',writer='imagemagick', fps=10) #nombre de como quieres que se guarde el video. 'imagemagick'
+anima_T = animar_dedalus(x, y, T_dat, t_dat, 1, 'rainbow')
+#mywriter = animation.FFMpegWriter()
+#anima_T.save('temp_salinity_7x2pm.gif',writer='imagemagick', fps=4) #nombre de como quieres que se guarde el video. 'imagemagick'
 #anima_T.save('prueba2.mp4',writer=mywriter, fps=30)
 '''
 anima_ρ = animar_dedalus(x, y, ρ_dat, 'rainbow_r')
