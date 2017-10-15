@@ -33,6 +33,7 @@ T_top = 20.0
 L_conv = 0.35
 Reynolds = 100
 Schmidt = 1000
+Peclet = 1e6
 
 x_basis = de.Fourier('x', nx, interval=(0, Lx))
 y_basis = de.Chebyshev('y', ny, interval=(0, Ly))
@@ -66,14 +67,18 @@ problem.parameters['Lx'] = Lx
 
 problem.parameters['Re'] = Reynolds
 problem.parameters['Sc'] = Schmidt
+problem.parameters['Pe'] = Peclet
 
 problem.add_equation("dx(u) + vy = 0") #continuidad
 problem.add_equation("dt(u) - ν*(dx(dx(u)) + dy(uy)) + dx(p) = -(u*dx(u) + v*uy)") #N-S x
 problem.add_equation("dt(v) - ν*(dx(dx(v)) + dy(vy)) + dy(p) = -(u*dx(v) + v*vy) - g*(ρ - ρ0)/ρ0") #N-S y
-problem.add_equation("dt(T) - κ*(dx(dx(T)) + dy(Ty)) = - u*dx(T) - v*Ty - k*(T - T_air)") #conservación energía
 problem.add_equation("ρ = ρ0 - α*(T - T_0) + β*(s - s0)") #ecuación de estado
-problem.add_equation("dt(s) - 1/(Re*Sc)*(dx(dx(s)) + dy(sy)) = - u*dx(s) - v*sy") #ecuación para salinidad
-#Nota: quité el número de Schmidt
+
+#problem.add_equation("dt(T) - κ*(dx(dx(T)) + dy(Ty)) = - u*dx(T) - v*Ty - k*(T - T_air)") #conservación energía
+#problem.add_equation("dt(s) - 1/(Re*Sc)*(dx(dx(s)) + dy(sy)) = - u*dx(s) - v*sy") #ecuación para salinidad
+
+problem.add_equation("dt(T) - 1/Pe*(dx(dx(T)) + dy(Ty)) = - u*dx(T) - v*Ty") #conservación energía
+problem.add_equation("dt(s) - 1/(Pe)*(dx(dx(s)) + dy(sy)) = - u*dx(s) - v*sy") #Salinidad
 
 problem.add_equation("Ty - dy(T) = 0")
 problem.add_equation("uy - dy(u) = 0")
@@ -131,12 +136,12 @@ for i in range(0, len(y[0])):
 # Initial timestep
 dt = 0.02
 # Integration parameters
-solver.stop_sim_time = 150
+solver.stop_sim_time = 150 
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('temp_salinity_8x12pm', sim_dt=0.25, max_writes=200)
+snapshots = solver.evaluator.add_file_handler('peclet_10e6', sim_dt=0.25, max_writes=200)
 snapshots.add_system(solver.state)
 snapshots.add_task("integ(s,'x')/Lx", name='s profile')
 snapshots.add_task("integ(T,'x')/Lx", name='T profile')
