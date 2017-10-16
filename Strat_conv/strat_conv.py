@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 # ## Dominio del problema
 
 Lx, Ly = (0.1, 0.15)
-nx, ny = (256, 256)
+nx, ny = (512, 256)
 
 ν = 1.8e-6 # m^2/s viscocidad cinemática
 k = 2e-5 # s^-1
@@ -136,16 +136,17 @@ for i in range(0, len(y[0])):
 # Initial timestep
 dt = 0.02
 # Integration parameters
-solver.stop_sim_time = 150 
+solver.stop_sim_time = 50
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('peclet_10e6', sim_dt=0.25, max_writes=200)
+snapshots = solver.evaluator.add_file_handler('peclet_10e6_24', sim_dt=0.1, max_writes=200)
 snapshots.add_system(solver.state)
 snapshots.add_task("integ(s,'x')/Lx", name='s profile')
 snapshots.add_task("integ(T,'x')/Lx", name='T profile')
 snapshots.add_task("integ(ρ,'x')/Lx", name='ρ profile')
+
 
 # CFL
 #CFL = flow_tools.CFL(solver, initial_dt = dt, max_change = 0.5)
