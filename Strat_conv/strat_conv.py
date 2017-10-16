@@ -136,7 +136,7 @@ for i in range(0, len(y[0])):
 # Initial timestep
 dt = 0.02
 # Integration parameters
-solver.stop_sim_time = 50
+solver.stop_sim_time = 250
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
