@@ -27,7 +27,7 @@ s0 = 12.5
 z_int = 0.08 #Altura de convección (m)
 
 T0 = 20.0 # ºC Promedio de las temperaturas iniciales
-T_b = 24.0 #Bottom temperature ºC
+T_b = 40.0 #Bottom temperature ºC
 T_air = 20. # ºC temperatura de aire.
 T_top = 20.0
 L_conv = 0.35
@@ -136,12 +136,12 @@ for i in range(0, len(y[0])):
 # Initial timestep
 dt = 0.02
 # Integration parameters
-solver.stop_sim_time = 300
+solver.stop_sim_time = 250
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('ugm_24', sim_dt=0.1, max_writes=200)
+snapshots = solver.evaluator.add_file_handler('ugm_40', sim_dt=0.1, max_writes=200)
 snapshots.add_system(solver.state)
 snapshots.add_task("integ(s,'x')/Lx", name='s profile')
 snapshots.add_task("integ(T,'x')/Lx", name='T profile')
