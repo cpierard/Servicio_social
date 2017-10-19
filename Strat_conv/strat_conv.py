@@ -141,7 +141,7 @@ solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('ugm_28', sim_dt=3.0, max_writes=1200)
+snapshots = solver.evaluator.add_file_handler('ugm_28_1hr', sim_dt=3.0, max_writes=1200)
 snapshots.add_system(solver.state)
 #snapshots.add_task("integ(s,'x')/Lx", name='s profile')
 #snapshots.add_task("integ(T,'x')/Lx", name='T profile')
