@@ -72,7 +72,7 @@ def animar_dedalus(xm, ym, S, t, norma,  CMAP):
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-T_dat , ρ_dat, s_dat, t_dat = extraer_datos('temp_salinity_8x9am/temp_salinity_8x9am_s1.h5')
+T_dat , ρ_dat, s_dat, t_dat = extraer_datos('temp_salinity_8x12pm/temp_salinity_8x12pm_s2.h5')
 print('sim t')
 print(t_dat.shape)
 
@@ -83,7 +83,7 @@ print(t_dat.shape)
 #print(dy)
 anima_T = animar_dedalus(x, y, T_dat, t_dat, 1, 'rainbow')
 #mywriter = animation.FFMpegWriter()
-anima_T.save('SAL_8x9am_s1.gif',writer='imagemagick', fps=8) #nombre de como quieres que se guarde el video. 'imagemagick'
+#anima_T.save('SAL_8x9am_s1.gif',writer='imagemagick', fps=8) #nombre de como quieres que se guarde el video. 'imagemagick'
 #anima_T.save('prueba2.mp4',writer=mywriter, fps=30)
 '''
 anima_ρ = animar_dedalus(x, y, ρ_dat, 'rainbow_r')
