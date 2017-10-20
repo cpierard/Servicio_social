@@ -25,18 +25,13 @@ def extraer_datos(nombre_h5):
         #print(tasks_items)
 
         T = np.array(tasks.get('T'))
-        print(T.shape)
-
         ρ = np.array(tasks.get('ρ'))
-        print(ρ.shape)
-
         s = np.array(tasks.get('s'))
-        print(s.shape)
-
         t = np.array(scales.get('sim_time'))
-        print('sim t: ' +str(t.shape))
+        NN = np.array(tasks.get('NN'))
+        print('Exportando...')
 
-    return T, ρ, s, t
+    return T, ρ, s, t, NN
 
     #Función animar
 
@@ -72,7 +67,7 @@ def animar_dedalus(xm, ym, S, t, norma,  CMAP):
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-T_dat , ρ_dat, s_dat, t_dat = extraer_datos('temp_salinity_8x12pm/temp_salinity_8x12pm_s2.h5')
+T_dat , ρ_dat, s_dat, t_dat, NN_dat = extraer_datos('ugm_28/ugm_28.h5')
 print('sim t')
 print(t_dat.shape)
 
@@ -81,9 +76,9 @@ print(t_dat.shape)
 #print(max_v)
 
 #print(dy)
-anima_T = animar_dedalus(x, y, T_dat, t_dat, 1, 'rainbow')
+anima_T = animar_dedalus(x, y, NN_dat[1:,:,:], t_dat, 1, 'rainbow')
 #mywriter = animation.FFMpegWriter()
-#anima_T.save('SAL_8x9am_s1.gif',writer='imagemagick', fps=8) #nombre de como quieres que se guarde el video. 'imagemagick'
+anima_T.save('ugm_28/BV_ugm_28.mp4',writer='imagemagick', fps=24) #nombre de como quieres que se guarde el video. 'imagemagick'
 #anima_T.save('prueba2.mp4',writer=mywriter, fps=30)
 '''
 anima_ρ = animar_dedalus(x, y, ρ_dat, 'rainbow_r')

@@ -27,7 +27,7 @@ s0 = 12.5
 z_int = 0.08 #Altura de convección (m)
 
 T0 = 20.0 # ºC Promedio de las temperaturas iniciales
-T_b = 28.0 #Bottom temperature ºC
+T_b = 24.0 #Bottom temperature ºC
 T_air = 20. # ºC temperatura de aire.
 T_top = 20.0
 L_conv = 0.35
@@ -136,17 +136,17 @@ for i in range(0, len(y[0])):
 # Initial timestep
 dt = 0.02
 # Integration parameters
-solver.stop_sim_time = 3600
+solver.stop_sim_time = 300
 solver.stop_wall_time = np.inf
 solver.stop_iteration = np.inf
 
 # Analysis
-snapshots = solver.evaluator.add_file_handler('ugm_28_1hr', sim_dt=3.0, max_writes=1200)
+snapshots = solver.evaluator.add_file_handler('ugm_24', sim_dt=0.25, max_writes=1200)
 snapshots.add_system(solver.state)
-#snapshots.add_task("integ(s,'x')/Lx", name='s profile')
-#snapshots.add_task("integ(T,'x')/Lx", name='T profile')
+snapshots.add_task("integ(s,'x')/Lx", name='s profile')
+snapshots.add_task("integ(T,'x')/Lx", name='T profile')
 snapshots.add_task("integ(ρ,'x')/Lx", name='ρ profile')
-#snapshots.add_task("-g/ρ0*dy(ρ)", name='NN')
+snapshots.add_task("-g/ρ0*dy(ρ)", name='NN')
 
 
 # CFL
