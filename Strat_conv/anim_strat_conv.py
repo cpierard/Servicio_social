@@ -36,9 +36,12 @@ def extraer_datos(nombre_h5):
     #Función animar
 
 def animar_dedalus(xm, ym, S, t, norma,  CMAP):
-    fig, axis = plt.subplots(figsize=(5,7.5))
-    p = axis.pcolormesh(xm, ym, S[0,:,:],  norm= colors.PowerNorm(gamma=norma), cmap=CMAP)
+    fig, axis = plt.subplots(figsize=(6,7.5))
+    fig.suptitle('$N^2 \ (s^{-2})$', fontsize = 14, fontweight='bold', x = 0.8, y = 0.95) # 'T \ ($^oC$)' #'$N^2 \ (s^{-2})$'
+    #fig.suptitle('$N^2 \ (s^{-2})$', fontsize = 14, fontweight='bold')
+    p = axis.pcolormesh(xm, ym, S[0,:,:], norm= colors.Normalize(vmin=-1.15,vmax=1.5), cmap=CMAP) #, vmin = -1.15, vmax = 1.5
     plt.colorbar(p)
+    #p.set_clim(-1.15, 1.5) #Para plotear brunt-vaisala
     tx = axis.set_title(str(t[0]))
     plt.ylim(0,0.15)
 
@@ -49,14 +52,22 @@ def animar_dedalus(xm, ym, S, t, norma,  CMAP):
         return p
 
     def update(frame):
-        vmin = np.min(S[frame])
-        vmax = np.max(S[frame])
+        #vmin = np.min(S[frame])
+        #vmax = np.max(S[frame])
+        if t[frame] < 100:
+            time_str = str(t[frame])[:4]
+        elif t[frame] >= 100:
+            time_str = str(t[frame])[:5]
+        elif t[frame] >= 1000:
+            time_str = str(t[frame])[:6]
+
         p.set_array(np.ravel(S[frame, :-1, :-1]))
-        p.set_clim(vmin, vmax)
+        #p.set_clim(vmin, vmax)
         #plt.title(str(t[frame]))
-        plt.xlabel('$x$')
-        plt.ylabel('$y$')
-        tx.set_text('t = ' + str(t[frame]))
+        plt.xlabel('$x \ (m)$', fontsize = 18)
+        plt.ylabel('$z \ (m)$', fontsize = 18)
+        #tx.set_text('t = ' + str(t[frame]))
+        tx.set_text('t = ' + time_str )
         #plt.title('Temperatura')
 
         return p
@@ -67,33 +78,17 @@ def animar_dedalus(xm, ym, S, t, norma,  CMAP):
 
 #Abajo tienes que poner el nombre del archivo hdf5 en donde guardaste los datos.
 
-T_dat , ρ_dat, s_dat, t_dat, NN_dat = extraer_datos('ugm_28/ugm_28.h5')
-print('sim t')
-print(t_dat.shape)
+T_dat , ρ_dat, s_dat, t_dat, NN_dat = extraer_datos('ugm_28.h5')
 
-
-#max_v = v_dat = v_dat[-1, :, :].max()
-#print(max_v)
+####################ANIMACION######################
 
 #print(dy)
-anima_T = animar_dedalus(x, y, NN_dat[1:,:,:], t_dat, 1, 'rainbow')
-#mywriter = animation.FFMpegWriter()
-anima_T.save('ugm_28/BV_ugm_28.mp4',writer='imagemagick', fps=24) #nombre de como quieres que se guarde el video. 'imagemagick'
-#anima_T.save('prueba2.mp4',writer=mywriter, fps=30)
-'''
-anima_ρ = animar_dedalus(x, y, ρ_dat, 'rainbow_r')
-#mywriter = animation.FFMpegWriter()
-anima_ρ.save('RB_conv_rho.mp4',writer=mywriter, fps=30) #nombre de como quieres que se guarde el video.
+anima_T = animar_dedalus(x, y, NN_dat[1:,:,:], t_dat[1:], 1, 'Blues')
 
+## Video con ImageMagick
+#anima_T.save('NN_28.mp4' fps=24) #nombre de como quieres que se guarde el video. 'imagemagick'
 
-print(T_dat.shape)
-
-fig, axis = plt.subplots(figsize=(4,7))
-pT = axis.pcolormesh(x, y, T_dat[-1,:,:], norm= colors.PowerNorm(gamma=1./2.), cmap='rainbow');
-plt.annotate('hola', xy = (0.15, 0.3), xytext = (0.15, 0.32))
-plt.colorbar(pT)
-plt.title('Temperature, frame 240')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.show()
-'''
+## Video con FFMpeg
+Writer = animation.writers['ffmpeg']
+writer = Writer(fps=24,  bitrate=1800)
+anima_T.save('NN_28.mp4',writer=writer)
